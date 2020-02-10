@@ -29,15 +29,15 @@
   int mot2speed = 0;
   int motControlMatrix[MAXCONTROLROWS][7]{
            {0, 0, 0, 0, 0, 0, 0},
-           {1, 0, 0, 0, 0, 0, 100},
-           {0, 1, 0, 0, 0, 0, 75},
+           {1, 0, 0, 0, 0, 50, 110},
+           {0, 1, 0, 0, 0, 50, 85},
            {0, 0, 1, 0, 0, 85, 85},
-           {0, 0, 0, 1, 0, 75, 0},
-           {0, 0, 0, 0, 1, 100, 0},
-           {1, 1, 0, 0, 0, 0, 85},
+           {0, 0, 0, 1, 0, 75, 50},
+           {0, 0, 0, 0, 1, 110, 50},
+           {1, 1, 0, 0, 0, 50, 85},
            {0, 1, 1, 0, 0, 50, 100},
            {0, 0, 1, 1, 0, 100, 50},
-           {0, 0, 0, 1, 1, 85, 0},
+           {0, 0, 0, 1, 1, 85, 50},
            {1, 1, 1, 0, 0, 0, 70},
            {0, 1, 1, 1, 0, 50, 50},
            {0, 0, 1, 1, 1, 70, 0}
@@ -72,7 +72,7 @@ void loop() {
 
 //Step 1. Read the line sensor  
   sensorRead();
-  delay(10);
+  //delay(10);
 
 //Step 2. process the incoming data, and determine the motor commands   
    dataFilter();
@@ -117,12 +117,15 @@ void sensorRead(void) {
 void dataFilter(void) {
    
     bool rowMatch = true;
-    
+    int currentRow = 0;
+    int currentCol = 0;
     for (int row = 0; row < MAXCONTROLROWS; row++) {
       
       //compare one row of control matrix with sensor array
       //if it compares, control the motor
       for(int col = 0; col < MAXSENSVALS; col++) {
+        currentRow = row;
+        currentCol = col;
         if (sensVals[col] != motControlMatrix[row][col]){
           rowMatch = false;
           break;
@@ -131,10 +134,14 @@ void dataFilter(void) {
           rowMatch = true;  
         }
       } //done with inner loop 
+      Serial.print(currentCol);
+      
       if (rowMatch == true) {
+      
         mot1speed = motControlMatrix[row][5];
         mot2speed = motControlMatrix[row][6];
         break;
+        
       } 
     }//end of outer loop
     if (rowMatch == false) {
@@ -176,6 +183,10 @@ return true;
  *  git commit -m "first commit"
  *  git remote add origin git@github.com:jumblobinley/LWSC_Auto_Rob_V1.git
  *  git push -u origin master
+ *  git add lwe_autocar_v1.ino
+ *  git commit -m "Added core arduino code file v1"
+ *  git push -u origin master
+ *  
  *  
  *  ---Write code
  *  ---Add file to repo:
@@ -187,7 +198,7 @@ return true;
  *  
  *  ---When done writing code, commit your code and push to github in the cloud
  *  
- *  cd ~/Documents/ArduinoSketchBook/autocar_testing
+ *  cd ~/Documents/ArduinoSketchBook/lwe_auto_car/lwe_autocar_v1
  *  git add autocar_testing.ino
  *  git commit -m "comment"
  *  
