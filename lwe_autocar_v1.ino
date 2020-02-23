@@ -16,31 +16,45 @@
   --by Joseph Hauser
   --Modified 2020 jan 26
   --by Joseph Hauser
-
+  --Modified 2020 feb 2
+  --by Joseph Hauser
+  --Modified 2020 feb 10
+  --by Joseph Hauser
+  --Modified 2020 feb 22
+  --by Joseph Hauser
 ************************************************** */
 
 // setting up global values for sensors
   
   #define MOTOR1 9
   #define MOTOR2 10
+  #define CALIBRATE 7
+  
   #define MAXCONTROLROWS 14
   #define MAXSENSVALS 5
+  #define LEFTDOT 2
+  #define RIGHTDOT 6
+  #define LEFTDIR 1
+  #define RIGHTDIR 2
+  #define STOPPED 0
+  
   int mot1speed = 0;
   int mot2speed = 0;
+  int prevDir = 0;
   int motControlMatrix[MAXCONTROLROWS][7]{
            {0, 0, 0, 0, 0, 0, 0},
-           {1, 0, 0, 0, 0, 50, 110},
-           {0, 1, 0, 0, 0, 50, 85},
+           {1, 0, 0, 0, 0, 80, 110},
+           {0, 1, 0, 0, 0, 80, 85},
            {0, 0, 1, 0, 0, 85, 85},
-           {0, 0, 0, 1, 0, 75, 50},
-           {0, 0, 0, 0, 1, 110, 50},
-           {1, 1, 0, 0, 0, 50, 85},
-           {0, 1, 1, 0, 0, 50, 100},
-           {0, 0, 1, 1, 0, 100, 50},
-           {0, 0, 0, 1, 1, 85, 50},
-           {1, 1, 1, 0, 0, 0, 70},
-           {0, 1, 1, 1, 0, 50, 50},
-           {0, 0, 1, 1, 1, 70, 0}
+           {0, 0, 0, 1, 0, 85, 80},
+           {0, 0, 0, 0, 1, 110, 80},
+           {1, 1, 0, 0, 0, 80, 85},
+           {0, 1, 1, 0, 0, 80, 100},
+           {0, 0, 1, 1, 0, 90, 90},
+           {0, 0, 0, 1, 1, 100, 80},
+           {1, 1, 1, 0, 0, 0, 80},
+           {0, 1, 1, 1, 0, 80, 80},
+           {0, 0, 1, 1, 1, 80, 0}
             }; 
             
   bool sensVals[MAXSENSVALS] = {LOW, LOW, LOW, LOW, LOW};
@@ -56,6 +70,18 @@ void setup() {
   pinMode(A3, INPUT);
   pinMode(A3, INPUT);
   pinMode(A4, INPUT);
+  pinMode(CALIBRATE, OUTPUT);
+
+//Calibrate Line Sensor upon startup
+
+  digitalWrite(CALIBRATE, LOW);
+  delay(3000);
+  digitalWrite(CALIBRATE, HIGH);
+  delay(5000);
+  digitalWrite(CALIBRATE, LOW);
+  delay(2000);
+  digitalWrite(CALIBRATE, HIGH);
+   
   //pinMode(A5, OUTPUT); but it's analog
 }
 
@@ -102,7 +128,7 @@ void sensorRead(void) {
  Serial.print(sensVals[0]);
  Serial.print(", ");
  Serial.print(sensVals[1]);
- Serial.print(", ");
+ Serial    .print(", ");
  Serial.print(sensVals[2]);
  Serial.print(", ");
  Serial.print(sensVals[3]);
@@ -115,7 +141,7 @@ void sensorRead(void) {
 
 // filters the data recieved so the motors can understand what actions to take
 void dataFilter(void) {
-   
+    prevDir = 0;
     bool rowMatch = true;
     int currentRow = 0;
     int currentCol = 0;
@@ -134,16 +160,44 @@ void dataFilter(void) {
           rowMatch = true;  
         }
       } //done with inner loop 
+
+      
       Serial.print(currentCol);
       
       if (rowMatch == true) {
-      
-        mot1speed = motControlMatrix[row][5];
-        mot2speed = motControlMatrix[row][6];
         break;
         
       } 
+
     }//end of outer loop
+       
+        mot1speed = motControlMatrix[currentRow][5];
+        mot2speed = motControlMatrix[currentRow][6];
+
+     if (currentRow == LEFTDOT) {
+      prevDir = RIGHTDIR;
+     }
+     if (currentRow == RIGHTDOT) {
+      prevDir = LEFTDIR;
+     }
+    
+     if (currentRow == STOPPED) {
+        if (prevDir == LEFTDIR) {
+          mot1speed = 100;
+          mot2speed = 0;
+      }
+        
+        else if (prevDir == RIGHTDIR)  {
+          
+          mot1speed = 0;
+          mot2speed = 100;
+      }
+        else {
+          Serial.print("set motor on track");
+          }
+     }
+    
+    // error condition
     if (rowMatch == false) {
       mot1speed = 0;
       mot2speed = 0;
@@ -159,7 +213,9 @@ bool motorControl(int motorNum, int motorPow) {
   Serial.print(", ");
   Serial.print(motorPow);
   Serial.print(" <-- ");
-  
+  Serial.print(prevDir);
+
+
   if (motorNum == MOTOR1) {
     analogWrite(MOTOR1, motorPow); 
  }
@@ -199,7 +255,7 @@ return true;
  *  ---When done writing code, commit your code and push to github in the cloud
  *  
  *  cd ~/Documents/ArduinoSketchBook/lwe_auto_car/lwe_autocar_v1
- *  git add autocar_testing.ino
+ *  git add lwe_autocar_v1.ino
  *  git commit -m "comment"
  *  
  *  git push -u origin master
