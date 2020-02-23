@@ -128,7 +128,7 @@ void sensorRead(void) {
  Serial.print(sensVals[0]);
  Serial.print(", ");
  Serial.print(sensVals[1]);
- Serial    .print(", ");
+ Serial.print(", ");
  Serial.print(sensVals[2]);
  Serial.print(", ");
  Serial.print(sensVals[3]);
@@ -141,7 +141,6 @@ void sensorRead(void) {
 
 // filters the data recieved so the motors can understand what actions to take
 void dataFilter(void) {
-    prevDir = 0;
     bool rowMatch = true;
     int currentRow = 0;
     int currentCol = 0;
@@ -162,7 +161,7 @@ void dataFilter(void) {
       } //done with inner loop 
 
       
-      Serial.print(currentCol);
+      //Serial.print(currentCol);
       
       if (rowMatch == true) {
         break;
@@ -193,7 +192,7 @@ void dataFilter(void) {
           mot2speed = 100;
       }
         else {
-          Serial.print("set motor on track");
+          Serial.print("Error:  set motor on track");
           }
      }
     
@@ -224,7 +223,7 @@ bool motorControl(int motorNum, int motorPow) {
     
  }
   else {
-    Serial.println("motor nonexiststant");
+    Serial.println("Error: motor nonexiststant");
     return false;
  }
 return true;
