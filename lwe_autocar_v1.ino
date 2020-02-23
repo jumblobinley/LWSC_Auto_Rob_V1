@@ -32,8 +32,8 @@
   
   #define MAXCONTROLROWS 14
   #define MAXSENSVALS 5
-  #define LEFTDOT 2
-  #define RIGHTDOT 6
+  #define LEFTDOT 5
+  #define RIGHTDOT 1
   #define LEFTDIR 1
   #define RIGHTDIR 2
   #define STOPPED 0
@@ -170,34 +170,32 @@ void dataFilter(void) {
 
     }//end of outer loop
        
-        mot1speed = motControlMatrix[currentRow][5];
-        mot2speed = motControlMatrix[currentRow][6];
+     // set motor speed based on the current row of the sensor matrix
+     mot1speed = motControlMatrix[currentRow][5];
+     mot2speed = motControlMatrix[currentRow][6];
 
-     if (currentRow == LEFTDOT) {
-      prevDir = RIGHTDIR;
-     }
-     if (currentRow == RIGHTDOT) {
-      prevDir = LEFTDIR;
-     }
-    
+     // Assign left and right previous direction only when the left or right sensors are lit
+     if (currentRow == LEFTDOT) {prevDir = RIGHTDIR;}
+     if (currentRow == RIGHTDOT){prevDir = LEFTDIR;}
+     
+     // if current row indicates zero on the sensors, tell the car to move in the opposite direction from previous
      if (currentRow == STOPPED) {
         if (prevDir == LEFTDIR) {
-          mot1speed = 100;
+          mot1speed = 150;
           mot2speed = 0;
-      }
-        
-        else if (prevDir == RIGHTDIR)  {
+        } 
+        else if (prevDir == RIGHTDIR){
           
           mot1speed = 0;
-          mot2speed = 100;
-      }
+          mot2speed = 150;
+        }
         else {
           Serial.print("Error:  set motor on track");
-          }
+        }
      }
     
-    // error condition
-    if (rowMatch == false) {
+    // error condition - no rows matched the sensor values
+    if(rowMatch == false) {
       mot1speed = 0;
       mot2speed = 0;
       Serial.println("uh oh, something went wrong >:(");
@@ -207,7 +205,7 @@ void dataFilter(void) {
 // commmands sent to the motor controller
 bool motorControl(int motorNum, int motorPow) {
   
-  Serial.print(" --> ");
+  Serial.print(" -----> ");
   Serial.print(motorNum);
   Serial.print(", ");
   Serial.print(motorPow);
