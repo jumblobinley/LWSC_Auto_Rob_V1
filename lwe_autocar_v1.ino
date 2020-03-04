@@ -30,7 +30,7 @@
   #define MOTOR2 10
   #define CALIBRATE 7
   
-  #define MAXCONTROLROWS 14
+  #define MAXCONTROLROWS 13
   #define MAXSENSVALS 5
   #define LEFTDOT 5
   #define RIGHTDOT 1
@@ -43,18 +43,18 @@
   int prevDir = 0;
   int motControlMatrix[MAXCONTROLROWS][7]{
            {0, 0, 0, 0, 0, 0, 0},
-           {1, 0, 0, 0, 0, 80, 110},
-           {0, 1, 0, 0, 0, 80, 85},
-           {0, 0, 1, 0, 0, 85, 85},
-           {0, 0, 0, 1, 0, 85, 80},
-           {0, 0, 0, 0, 1, 110, 80},
-           {1, 1, 0, 0, 0, 80, 85},
-           {0, 1, 1, 0, 0, 80, 100},
-           {0, 0, 1, 1, 0, 90, 90},
-           {0, 0, 0, 1, 1, 100, 80},
-           {1, 1, 1, 0, 0, 0, 80},
-           {0, 1, 1, 1, 0, 80, 80},
-           {0, 0, 1, 1, 1, 80, 0}
+           {1, 0, 0, 0, 0, 100, 50},
+           {0, 1, 0, 0, 0, 125, 80},
+           {0, 0, 1, 0, 0, 150, 150},
+           {0, 0, 0, 1, 0, 80, 125},
+           {0, 0, 0, 0, 1, 50, 100},
+           {1, 1, 0, 0, 0, 115, 65},
+           {0, 1, 1, 0, 0, 135, 80},
+           {0, 0, 1, 1, 0, 80, 135},
+           {0, 0, 0, 1, 1, 65, 115},
+           {1, 1, 1, 0, 0, 125, 80},
+           {0, 1, 1, 1, 0, 140, 140},
+           {0, 0, 1, 1, 1, 80, 125}
             }; 
             
   bool sensVals[MAXSENSVALS] = {LOW, LOW, LOW, LOW, LOW};
@@ -134,8 +134,8 @@ void sensorRead(void) {
  Serial.print(sensVals[3]);
  Serial.print(", ");
  Serial.print(sensVals[4]);
- Serial.print(", ");
- Serial.print(sensAn);
+// Serial.print(", ");
+ //Serial.print(sensAn);
  Serial.print(" -- ");
 }
 
@@ -181,13 +181,13 @@ void dataFilter(void) {
      // if current row indicates zero on the sensors, tell the car to move in the opposite direction from previous
      if (currentRow == STOPPED) {
         if (prevDir == LEFTDIR) {
-          mot1speed = 150;
-          mot2speed = 0;
+          mot1speed = 100;
+          mot2speed = 50;
         } 
         else if (prevDir == RIGHTDIR){
           
-          mot1speed = 0;
-          mot2speed = 150;
+          mot1speed = 50;
+          mot2speed = 100;
         }
         else {
           Serial.print("Error:  set motor on track");
