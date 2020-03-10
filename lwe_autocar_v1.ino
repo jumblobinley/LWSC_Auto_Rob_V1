@@ -22,6 +22,8 @@
   --by Joseph Hauser
   --Modified 2020 feb 22
   --by Joseph Hauser
+  --Modified 2020 mar 3
+  --by Joseph Hauser
 ************************************************** */
 
 // setting up global values for sensors
@@ -43,18 +45,18 @@
   int prevDir = 0;
   int motControlMatrix[MAXCONTROLROWS][7]{
            {0, 0, 0, 0, 0, 0, 0},
-           {1, 0, 0, 0, 0, 100, 50},
-           {0, 1, 0, 0, 0, 125, 80},
-           {0, 0, 1, 0, 0, 150, 150},
-           {0, 0, 0, 1, 0, 80, 125},
-           {0, 0, 0, 0, 1, 50, 100},
-           {1, 1, 0, 0, 0, 115, 65},
-           {0, 1, 1, 0, 0, 135, 80},
-           {0, 0, 1, 1, 0, 80, 135},
-           {0, 0, 0, 1, 1, 65, 115},
-           {1, 1, 1, 0, 0, 125, 80},
-           {0, 1, 1, 1, 0, 140, 140},
-           {0, 0, 1, 1, 1, 80, 125}
+           {1, 0, 0, 0, 0, 100, 25},
+           {0, 1, 0, 0, 0, 100, 50},
+           {0, 0, 1, 0, 0, 100, 100},
+           {0, 0, 0, 1, 0, 50, 100},
+           {0, 0, 0, 0, 1, 25, 100},
+           {1, 1, 0, 0, 0, 100, 35},
+           {0, 1, 1, 0, 0, 100, 75},
+           {0, 0, 1, 1, 0, 75, 100},
+           {0, 0, 0, 1, 1, 35, 100},
+           {1, 1, 1, 0, 0, 100, 50},
+           {0, 1, 1, 1, 0, 100, 100},
+           {0, 0, 1, 1, 1, 50, 100}
             }; 
             
   bool sensVals[MAXSENSVALS] = {LOW, LOW, LOW, LOW, LOW};
@@ -182,11 +184,11 @@ void dataFilter(void) {
      if (currentRow == STOPPED) {
         if (prevDir == LEFTDIR) {
           mot1speed = 100;
-          mot2speed = 50;
+          mot2speed = 0;
         } 
         else if (prevDir == RIGHTDIR){
           
-          mot1speed = 50;
+          mot1speed = 0;
           mot2speed = 100;
         }
         else {
